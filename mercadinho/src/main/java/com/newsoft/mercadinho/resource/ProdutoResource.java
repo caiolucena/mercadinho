@@ -32,14 +32,16 @@ public class ProdutoResource {
 	@Autowired
 	private ProdutoRepository produtoRepository;
 	
+	// eh interessante utilizar o "this"
 	@GetMapping
 	public List<Produto> listarProdutos() {
-		return produtoRepository.findAll();
+		return this.produtoRepository.findAll();
 	}
 	
+	//Faltou o valid aqui no salvar
 	@PostMapping
-	public ResponseEntity<Produto> salvar(@RequestBody Produto produto, HttpServletResponse response) {
-		 Produto produtoSalvo = produtoRepository.save(produto);
+	public ResponseEntity<Produto> salvar(@RequestBody @Valid Produto produto, HttpServletResponse response) {
+		 Produto produtoSalvo = this.produtoRepository.save(produto);
 		 
 		 URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}")
 			.buildAndExpand(produtoSalvo.getId()).toUri();
@@ -50,20 +52,25 @@ public class ProdutoResource {
 	
 	@GetMapping("/{id}")
 	public Optional<Produto> buscarId(@PathVariable Long id) {
-		return produtoRepository.findById(id);
+		
+		this.return produtoRepository.findById(id);
 	}
 	
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id) {
-		produtoRepository.deleteById(id);
+		
+		this.produtoRepository.deleteById(id);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<Produto> atualizar(@PathVariable Long id, @Valid @RequestBody Produto produto){
+		
 		Produto produtoSalvo = produtoRepository.findById(id);
 		BeanUtils.copyProperties(produto, produtoSalvo, "id");
-		produtoRepository.save(produtoSalvo);
+		this.produtoRepository.save(produtoSalvo);
+		
 		return ResponseEntity.ok(produtoSalvo);
+		
 	}
 }
